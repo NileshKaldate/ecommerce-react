@@ -1,15 +1,41 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { data } from "../data";
 import { useNavigate } from "react-router-dom";
+import useSWR from "swr";
+import { axiosInstance } from "../services/fetcher";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Home = () => {
-  const [products, setProducts] = useState(data);
+  const { data, error, isLoading } = useSWR("/products");
+  const { mutate } = useSWR("/cart/get");
   const navigate = useNavigate();
   const navButton =
     "border border-black rounded text-black hover:bg-black hover:text-white px-2";
 
+  const handleAddToCart = async (product) => {
+    await axiosInstance
+      .post("/cart/add", { productId: product._id })
+      .then((res) => {
+        mutate();
+        toast.success(res.data.message);
+      });
+  };
+
   return (
     <div className="px-40 mt-10">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="flex justify-center gap-2 py-5">
         <button className={`${navButton}`}>All</button>
         <button className={`${navButton}`}>Men's Clothing</button>
@@ -18,9 +44,9 @@ const Home = () => {
         <button className={`${navButton}`}>Electronics</button>
       </div>
       <div className="grid grid-cols-4 gap-10 w-full">
-        {products.map((product) => {
+        {data?.map((product) => {
           return (
-            <div id={product.id} key={product.id} className="p-2">
+            <div id={product.id} key={product._id} className="p-2">
               <div className="" key={product.id}>
                 <img
                   className=""
@@ -45,12 +71,21 @@ const Home = () => {
                   <button
                     className=" bg-[#FF9F00] text-white py-1 px-2 rounded text-sm"
                     onClick={() => {
-                      navigate(`/view/${product.id}`);
+                      navigate(`/view/${product._id}`);
                     }}
                   >
                     Buy Now
                   </button>
-                  <button className="bg-[#FB641B] text-white py-1 px-2 rounded text-sm">
+                  <button
+                    className="bg-[#FB641B] text-white py-1 px-2 rounded text-sm"
+                    onClick={() => {
+                      if (localStorage.getItem("token")) {
+                        handleAddToCart(product);
+                      } else {
+                        navigate("/login");
+                      }
+                    }}
+                  >
                     Add to Cart
                   </button>
                 </div>

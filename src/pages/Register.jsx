@@ -1,20 +1,25 @@
+import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../services/fetcher";
 
-const Contact = () => {
+const Register = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    // Handle form submission (e.g., send data to a server)
-    console.log(data);
+  const onSubmit = async (data) => {
+    await axiosInstance.post("/register", data).then(() => {
+      navigate("/login");
+    });
   };
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-gray-100 rounded-md border border-gray-500">
-      <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
+      <h2 className="text-2xl font-semibold mb-4">Registration Form</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
           <label
@@ -59,32 +64,47 @@ const Contact = () => {
 
         <div className="mb-4">
           <label
-            htmlFor="message"
+            htmlFor="password"
             className="block text-gray-600 font-medium mb-2"
           >
-            Message
+            Password
           </label>
-          <textarea
-            id="message"
-            {...register("message", { required: "Message is required" })}
+          <input
+            type="password"
+            id="password"
+            {...register("password", {
+              required: "Password is required",
+            })}
             className="w-full p-2 border rounded-md"
           />
-          {errors.message && (
+          {errors.password && (
             <p className="text-red-500 text-sm mt-1">
-              {errors.message.message}
+              {errors.password.message}
             </p>
           )}
         </div>
+
+        <p>
+          Already have an account?{" "}
+          <a
+            className="text-[#0573F0] cursor-pointer"
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            Login
+          </a>
+        </p>
 
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
-          Submit
+          Register
         </button>
       </form>
     </div>
   );
 };
 
-export default Contact;
+export default Register;

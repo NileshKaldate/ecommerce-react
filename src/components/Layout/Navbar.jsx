@@ -9,7 +9,7 @@ const Navbar = () => {
   };
   return (
     <div>
-      <div className="bg-[#0573F0] py-5 px-4 text-white">
+      <div className="bg-[#0573F0] py-5 px-4 text-white ">
         <nav className="flex justify-between ">
           <div className="" to="/">
             React Ecommerce
@@ -42,17 +42,38 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex  gap-5">
-            <div to="" className="cursor-pointer">
-              Login
-            </div>
-            <div to="" className="cursor-pointer">
-              Register
-            </div>
+            {localStorage.getItem("token") ? (
+              <div
+                to=""
+                className="cursor-pointer border border-white px-2 rounded"
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.reload();
+                }}
+              >
+                Logout
+              </div>
+            ) : (
+              <div
+                to=""
+                className="cursor-pointer border border-white px-2 rounded"
+                onClick={() => {
+                  handleNavigate("/login");
+                }}
+              >
+                Login
+              </div>
+            )}
+
             <div
               to=""
               className="cursor-pointer"
               onClick={() => {
-                handleNavigate("/cart");
+                if (localStorage.getItem("token")) {
+                  handleNavigate("/cart");
+                } else {
+                  navigate("/login");
+                }
               }}
             >
               Cart{" "}

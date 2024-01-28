@@ -27,6 +27,7 @@ const Service = () => {
       imgUrl: "https://cdn-icons-png.flaticon.com/512/6993/6993594.png",
     },
   ];
+
   return (
     <div>
       <div className="flex justify-between mt-2 px-20">

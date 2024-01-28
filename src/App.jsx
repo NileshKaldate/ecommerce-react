@@ -4,6 +4,13 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import ViewProduct from "./pages/ViewProduct";
 import Service from "./components/Layout/Service";
+import { SWRConfig } from "swr";
+import fetcher from "./services/fetcher";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import { ToastContainer } from "react-toastify";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 function App() {
   const router = createBrowserRouter([
@@ -24,13 +31,36 @@ function App() {
           element: <Cart />,
         },
         {
+          path: "/about",
+          element: <About />,
+        },
+        {
           path: "/view/:id",
           element: <ViewProduct />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/contact",
+          element: <Contact />,
+        },
+        {
+          path: "/register",
+          element: <Register />,
         },
       ],
     },
   ]);
-  return <RouterProvider router={router} />;
+  return (
+    <SWRConfig
+      value={{ fetcher, revalidateIfStale: false, revalidateOnFocus: false }}
+    >
+      <RouterProvider router={router} />;
+      <ToastContainer />
+    </SWRConfig>
+  );
 }
 
 export default App;

@@ -5,3 +5,10 @@
 body {
   background-color: #eceeef;
 }
+
+input {
+  border: 1px solid gray;
+}
+textarea {
+  border: 1px solid gray;
+}
