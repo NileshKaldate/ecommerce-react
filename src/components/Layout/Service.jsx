@@ -31,9 +31,9 @@ const Service = () => {
   return (
     <div>
       <div className="flex justify-between mt-2 px-20">
-        {data.map((item) => {
+        {data.map((item, index) => {
           return (
-            <div className="flex items-center gap-3 ">
+            <div className="flex items-center gap-3" key={index}>
               <img
                 src={item.imgUrl}
                 style={{ height: 24, objectFit: "fill" }}

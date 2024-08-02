@@ -8,8 +8,8 @@ const Navbar = () => {
     navigate(path);
   };
   return (
-    <div>
-      <div className="bg-[#0573F0] py-5 px-4 text-white ">
+    <div className="flex flex-col items-center">
+      <div className="bg-[#0573F0] py-5 px-4 text-white w-full">
         <nav className="flex justify-between ">
           <div className="" to="/">
             React Ecommerce
@@ -70,7 +70,7 @@ const Navbar = () => {
               className="cursor-pointer"
               onClick={() => {
                 if (localStorage.getItem("token")) {
-                  handleNavigate("/cart");
+                  window.location.href = "/cart";
                 } else {
                   navigate("/login");
                 }
@@ -81,8 +81,9 @@ const Navbar = () => {
           </div>
         </nav>
       </div>
-
-      <Outlet />
+      <div className="max-w-[1500px]">
+        <Outlet />
+      </div>
     </div>
   );
 };

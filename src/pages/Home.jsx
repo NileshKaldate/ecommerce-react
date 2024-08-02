@@ -5,13 +5,16 @@ import useSWR from "swr";
 import { axiosInstance } from "../services/fetcher";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useGetProducts } from "../services/productService";
+import { PRODUCT_CATEGORIES } from "../constants/constants";
 
 const Home = () => {
-  const { data, error, isLoading } = useSWR("/products");
-  const { mutate } = useSWR("/cart/get");
   const navigate = useNavigate();
-  const navButton =
-    "border border-black rounded text-black hover:bg-black hover:text-white px-2";
+  const [category, setCategory] = useState("all");
+  const { data } = useGetProducts({
+    category: category === "all" ? "" : category,
+  });
+  const { mutate } = useSWR("/cart/get");
 
   const handleAddToCart = async (product) => {
     await axiosInstance
@@ -24,29 +27,23 @@ const Home = () => {
 
   return (
     <div className="px-40 mt-10">
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
       <div className="flex justify-center gap-2 py-5">
-        <button className={`${navButton}`}>All</button>
-        <button className={`${navButton}`}>Men's Clothing</button>
-        <button className={`${navButton}`}>Women's Clothing</button>
-        <button className={`${navButton}`}>Jewelery</button>
-        <button className={`${navButton}`}>Electronics</button>
+        {PRODUCT_CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            className={`border border-black rounded text-black hover:bg-black hover:text-white px-2 ${
+              category === cat ? "bg-black text-white" : ""
+            }`}
+            onClick={() => setCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
       <div className="grid grid-cols-4 gap-10 w-full">
-        {data?.map((product) => {
+        {data?.data?.map((product) => {
           return (
-            <div id={product.id} key={product._id} className="p-2">
+            <div key={product._id} className="p-2">
               <div className="" key={product.id}>
                 <img
                   className=""

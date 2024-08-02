@@ -1,26 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { axiosInstance } from "../services/fetcher";
+import { useGetCartProducts } from "../services/productService";
+import { MdDelete } from "react-icons/md";
 
 const Cart = () => {
-  const { data, mutate } = useSWR("/cart/get");
+  const { data, isLoading } = useGetCartProducts();
+
+  const [products, setProducts] = useState(data?.data);
 
   const totalProductPrice =
-    data?.reduce((result, current) => {
+    data?.data?.reduce((result, current) => {
       result += current.quantity * current.product.price;
       return result;
     }, 0) || 0;
 
   const handleQuantity = async (product, quantity) => {
-    await axiosInstance
-      .put("/cart/update-quantity", {
+    if (quantity === 0) {
+      setProducts(products.filter((item) => item.product._id !== product._id));
+    } else {
+      console.log("first");
+      setProducts(
+        products.map((item) => {
+          if (item.product._id === product._id) {
+            return { ...item, quantity: quantity };
+          }
+          return item;
+        })
+      );
+    }
+    !isLoading &&
+      (await axiosInstance.put("/cart/update-quantity", {
         productId: product._id,
         quantity: quantity,
-      })
-      .then(() => {
-        mutate();
-      });
+      }));
   };
+
+  useEffect(() => {
+    setProducts(data?.data);
+  }, [data]);
 
   return (
     <div className="flex justify-center mt-4">
@@ -28,7 +46,7 @@ const Cart = () => {
         <div className="flex justify-center mb-5">
           <h1 className="font-bold text-2xl">Cart</h1>
         </div>
-        {data?.length === 0 || !data ? (
+        {products?.length === 0 || !data ? (
           <h1>Your cart is empty</h1>
         ) : (
           <div className="flex gap-10 items-start">
@@ -36,9 +54,15 @@ const Cart = () => {
               <h1 className="p-5 font-semibold text-xl">Item List</h1>
               <div className="border border-gray-400"></div>
               <div className="p-5">
-                {data?.map((item) => {
+                {products?.map((item) => {
                   return (
-                    <div>
+                    <div className="relative">
+                      <MdDelete
+                        className="absolute top-2 right-3 h-6 w-6 cursor-pointer"
+                        onClick={() => {
+                          handleQuantity(item.product, 0);
+                        }}
+                      />
                       <div className="flex gap-2 items-center py-5">
                         <img
                           src={item.product.image}
